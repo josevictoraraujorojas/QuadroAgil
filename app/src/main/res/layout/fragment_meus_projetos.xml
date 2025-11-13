@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="#FAF9FB">
+
+    <!-- Conteúdo principal -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Meus Projetos"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMeusProjetos"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="72dp"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
+    <!-- FAB centralizado acima da barra de navegação -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnNovoProjeto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Adicionar projeto"
+        android:src="@drawable/ic_add"
+        app:fabSize="normal"
+        app:tint="@android:color/white"
+        app:backgroundTint="#6A3EC1"
+        app:layout_anchorGravity="bottom|center_horizontal"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="90dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

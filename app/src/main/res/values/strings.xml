@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Quadro Agil</string>
+    <string name="projeto_icon">Ícone do projeto</string>
+    <string name="remover_projeto">Remover Projeto</string>
+    <string name="adicionar_projeto">Adicionar projeto</string>
 </resources>
