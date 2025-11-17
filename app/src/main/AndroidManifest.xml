@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".ui.cadastro.CadastroActivity"/>
         <activity android:name=".ui.home.HomeActivity"/>
+        <activity android:name=".ui.projeto.TaskActivity"/>
     </application>
 
 </manifest>

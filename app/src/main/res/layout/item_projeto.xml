@@ -15,7 +15,7 @@
         android:layout_height="24dp"
         android:src="@drawable/ic_projetos"
         android:background="@null"
-        android:tint="#333" />
+        app:tint="#333" />
 
     <TextView
         android:id="@+id/tvNomeProjeto"
@@ -32,5 +32,5 @@
         android:layout_height="24dp"
         android:src="@drawable/ic_close"
         android:background="@null"
-        android:tint="#000000" />
+        app:tint="#000000" />
 </LinearLayout>

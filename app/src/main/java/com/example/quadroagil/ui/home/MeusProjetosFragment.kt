@@ -1,5 +1,6 @@
 package com.example.quadroagil.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quadroagil.databinding.FragmentMeusProjetosBinding
+import com.example.quadroagil.ui.projeto.TaskActivity
 
 class MeusProjetosFragment : Fragment() {
 
@@ -27,7 +29,9 @@ class MeusProjetosFragment : Fragment() {
         adapter = ProjetoAdapter(
             projetos = listaProjetos,
             onRemoveClick = { projeto -> mostrarDialogoExcluir(projeto) },
-            onItemClick = { projeto -> /* futuro: abrir detalhes */ }
+            onItemClick = { projeto ->
+                abrirTaskActivity(projeto)
+            }
         )
 
         binding.rvMeusProjetos.layoutManager = LinearLayoutManager(requireContext())
@@ -37,6 +41,12 @@ class MeusProjetosFragment : Fragment() {
             (activity as? HomeActivity)?.replaceFragment(CriarProjetoFragment())
         }
         return binding.root
+    }
+
+    private fun abrirTaskActivity(projeto: String) {
+        val intent = Intent(requireContext(), TaskActivity::class.java)
+        intent.putExtra("projetoNome", projeto) // Enviando nome do projeto
+        startActivity(intent)
     }
 
     private fun mostrarDialogoExcluir(projeto: String) {
