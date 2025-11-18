@@ -19,6 +19,8 @@ class TaskActivity : AppCompatActivity() {
         val nomeProjeto = intent.getStringExtra("projetoNome")
         binding.toolbarTask.title = nomeProjeto ?: "Projeto"
         setSupportActionBar(binding.toolbarTask)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.toolbarTask.setNavigationOnClickListener { finish() }
 
         // Fragmento inicial — Tarefas

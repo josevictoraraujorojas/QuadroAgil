@@ -62,7 +62,7 @@ class TarefasFragment : Fragment() {
         recycler.adapter = TarefaAdapter(
             lista,
             onEditar = { tarefa ->
-                Toast.makeText(requireContext(), "Editar ${tarefa.nome}", Toast.LENGTH_SHORT).show()
+                abrirFragment(EditarTarefaFragment.newInstance(tarefa))
             },
             onExcluir = { tarefa ->
                 AlertDialog.Builder(requireContext())
@@ -78,6 +78,13 @@ class TarefasFragment : Fragment() {
     }
 
     private fun adicionarTarefa(status: String) {
-        Toast.makeText(requireContext(), "Criar tarefa em $status", Toast.LENGTH_SHORT).show()
+        abrirFragment(AdicionarTarefaFragment.newInstance(status))
+    }
+
+    private fun abrirFragment(fragment: Fragment) {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(com.example.quadroagil.R.id.fragmentContainer, fragment) // container da Home
+            .addToBackStack(null)
+            .commit()
     }
 }
