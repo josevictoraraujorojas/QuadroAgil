@@ -3,4 +3,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple_500">#6750A4</color>
+    <color name="donut_bg">#E9DBEA</color>
+    <color name="donut_progress">#6C3B64</color>
+    <color name="donut_text">#4A2E42</color>
+    <color name="donut_label">#6C3B64</color>
+    <color name="status_afazer">#B36B6B</color>
+    <color name="status_fazendo">#5A3A90</color>
+    <color name="status_feito">#D9C8FF</color>
 </resources>

@@ -31,7 +31,7 @@ class TaskActivity : AppCompatActivity() {
             when (item.itemId) {
 
                 R.id.nav_visao_geral -> {
-                    //replaceFragment(VisaoGeralFragment())
+                    replaceFragment(VisaoGeralFragment())
                 }
 
                 R.id.nav_tarefas -> {
