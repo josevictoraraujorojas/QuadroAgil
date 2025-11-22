@@ -39,7 +39,7 @@ class TaskActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_equipe -> {
-                    //replaceFragment(EquipeFragment())
+                    replaceFragment(EquipeFragment())
                 }
 
                 R.id.nav_editar -> {
