@@ -75,7 +75,8 @@
                 android:id="@+id/etDataNascimento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="date"/>
+                android:inputType="date"
+                android:maxLength="10"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Rodapé com botão e seta -->
