@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_colaboracoes"
+        android:icon="@drawable/ic_colaboracao"
+        android:title="Colaborações" />
+    <item
+        android:id="@+id/nav_meus_projetos"
+        android:icon="@drawable/ic_projetos"
+        android:title="Meus Projetos" />
+    <item
+        android:id="@+id/nav_sair"
+        android:icon="@drawable/ic_logout"
+        android:title="Sair" />
+</menu>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card_projeto">
+
+    <ImageButton
+        android:id="@+id/iconProjeto"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_projetos"
+        android:background="@null"
+        app:tint="#333" />
+
+    <TextView
+        android:id="@+id/tvNomeProjeto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:text="Projeto X"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/btnExcluir"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_close"
+        android:background="@null"
+        app:tint="#000000" />
+</LinearLayout>
