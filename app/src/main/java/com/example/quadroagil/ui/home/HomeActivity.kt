@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.quadroagil.MainActivity
 import com.example.quadroagil.R
 import com.example.quadroagil.databinding.ActivityHomeBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeActivity : AppCompatActivity() {
 
@@ -31,6 +32,15 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    private fun deslogar() {
+        val auth = FirebaseAuth.getInstance()
+        auth.signOut()
+
+        // Volta para a tela inicial (MainActivity)
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frame_container, fragment)
@@ -42,8 +52,7 @@ class HomeActivity : AppCompatActivity() {
             .setTitle("Sair")
             .setMessage("Deseja realmente sair?")
             .setPositiveButton("Sim") { _, _ ->
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                deslogar()
             }
             .setNegativeButton("Cancelar", null)
             .show()

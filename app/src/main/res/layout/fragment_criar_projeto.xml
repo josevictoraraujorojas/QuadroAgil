@@ -64,6 +64,22 @@
                 android:inputType="textEmailAddress"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDescricaoProjeto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Descrição do Projeto">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDescricaoProjeto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="3"
+                android:gravity="top"
+                android:inputType="textMultiLine"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
         <Button
             android:id="@+id/btnCriar"
             android:layout_width="match_parent"
