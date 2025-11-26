@@ -45,6 +45,7 @@ class CadastroViewModel(
     // --- Função final para cadastrar ---
     fun cadastrar() {
         val erroValidacao = validarCampos()
+
         if (erroValidacao != null) {
             _erro.value = erroValidacao
             return
@@ -75,4 +76,5 @@ class CadastroViewModel(
             )
         }
     }
+
 }
