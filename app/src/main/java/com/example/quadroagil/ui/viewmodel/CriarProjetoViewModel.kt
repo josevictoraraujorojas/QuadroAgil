@@ -77,7 +77,7 @@ class CriarProjetoViewModel(
                     // 4) Criar Participacao como DONO
                     // ============================
                     participacaoRepository.adicionarParticipacao(
-                        idUsuario = usuarioLogado.id,   // <-- AQUI vai o ID correto do usuário
+                        idUsuario = usuarioLogado.id,
                         idProjeto = projetoCriado.id,
                         papel = Papel.DONO
                     )
