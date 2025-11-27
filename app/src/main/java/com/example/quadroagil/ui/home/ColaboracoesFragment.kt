@@ -24,15 +24,15 @@ class ColaboracoesFragment : Fragment() {
     ): View {
         _binding = FragmentColaboracoesBinding.inflate(inflater, container, false)
 
-        adapter = ProjetoAdapter(
-            mutableListOf("Projeto 1", "Projeto 2", "Projeto 3"),
-            onRemoveClick = { projeto ->
-                mostrarDialogoSairProjeto(projeto)
-            },
-            onItemClick = { projeto ->
-                abrirTaskActivity(projeto)
-            }
-        )
+//        adapter = ProjetoAdapter(
+//            mutableListOf("Projeto 1", "Projeto 2", "Projeto 3"),
+//            onRemoveClick = { projeto ->
+//                mostrarDialogoSairProjeto(projeto)
+//            },
+//            onItemClick = { projeto ->
+//                abrirTaskActivity(projeto)
+//            }
+//        )
 
         binding.rvProjetos.layoutManager = LinearLayoutManager(requireContext())
         binding.rvProjetos.adapter = adapter

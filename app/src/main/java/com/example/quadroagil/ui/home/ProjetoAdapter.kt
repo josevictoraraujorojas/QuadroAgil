@@ -7,11 +7,12 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quadroagil.R
+import com.example.quadroagil.data.model.Projeto
 
 class ProjetoAdapter(
-    private val projetos: MutableList<String>,
-    private val onRemoveClick: (String) -> Unit,
-    private val onItemClick: (String) -> Unit
+    private val projetos: MutableList<Projeto>,
+    private val onRemoveClick: (Projeto) -> Unit,
+    private val onItemClick: (Projeto) -> Unit
 ) : RecyclerView.Adapter<ProjetoAdapter.ProjetoViewHolder>() {
 
     inner class ProjetoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -27,11 +28,17 @@ class ProjetoAdapter(
 
     override fun onBindViewHolder(holder: ProjetoViewHolder, position: Int) {
         val projeto = projetos[position]
-        holder.nomeProjeto.text = projeto
+        holder.nomeProjeto.text = projeto.nome
 
         holder.itemView.setOnClickListener { onItemClick(projeto) }
         holder.btnExcluir.setOnClickListener { onRemoveClick(projeto) }
     }
 
     override fun getItemCount() = projetos.size
+
+    fun atualizarLista(novaLista: List<Projeto>) {
+        projetos.clear()
+        projetos.addAll(novaLista)
+        notifyDataSetChanged()
+    }
 }
