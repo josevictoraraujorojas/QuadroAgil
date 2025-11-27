@@ -42,9 +42,7 @@ class CriarProjetoViewModel(
 
         viewModelScope.launch {
 
-            // ============================
-            // 1) Buscar usuário logado no Firestore
-            // ============================
+            //Buscar usuário logado no Firestore
             val usuarioLogado = usuarioRepository.obterUsuarioLogado()
 
             if (usuarioLogado == null) {
@@ -52,9 +50,7 @@ class CriarProjetoViewModel(
                 return@launch
             }
 
-            // ============================
-            // 2) Criar objeto Projeto
-            // ============================
+            //Criar objeto Projeto
             val projeto = Projeto(
                 id = "",
                 nome = nome,
@@ -65,17 +61,13 @@ class CriarProjetoViewModel(
                 idResumoProjeto = ""
             )
 
-            // ============================
-            // 3) Salvar projeto no Firestore
-            // ============================
+            //Salvar projeto no Firestore
             val resultado = projetoRepository.criarProjeto(projeto)
 
             resultado.fold(
                 onSuccess = { projetoCriado ->
 
-                    // ============================
-                    // 4) Criar Participacao como DONO
-                    // ============================
+                    //Criar Participacao como DONO
                     participacaoRepository.adicionarParticipacao(
                         idUsuario = usuarioLogado.id,
                         idProjeto = projetoCriado.id,
