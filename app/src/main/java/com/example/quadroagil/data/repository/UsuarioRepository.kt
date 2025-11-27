@@ -14,7 +14,8 @@ class UsuarioRepository(
     suspend fun cadastrarUsuario(email: String, senha: String, usuario: Usuario): Result<Usuario> {
         return try {
             val authResult = auth.createUserWithEmailAndPassword(email, senha).await()
-            val uid = authResult.user?.uid ?: return Result.failure(Exception("Erro ao criar usuário"))
+            val uid =
+                authResult.user?.uid ?: return Result.failure(Exception("Erro ao criar usuário"))
 
             val usuarioComId = usuario.copy(id = uid)
 
@@ -47,5 +48,17 @@ class UsuarioRepository(
             .get()
             .await()
             .toObject(Usuario::class.java)
+    }
+
+    suspend fun obterUsuarioLogado(): Usuario? {
+        val email = auth.currentUser?.email ?: return null
+
+        val snapshot = db.collection("usuarios")
+            .whereEqualTo("email", email)
+            .get()
+            .await()
+
+        return snapshot.documents.firstOrNull()?.toObject(Usuario::class.java)
+            ?.copy(id = snapshot.documents.first().id)
     }
 }

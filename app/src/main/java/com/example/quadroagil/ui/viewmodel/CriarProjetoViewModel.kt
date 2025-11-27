@@ -4,12 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quadroagil.data.model.Papel
 import com.example.quadroagil.data.model.Projeto
+import com.example.quadroagil.data.repository.ParticipacaoRepository
 import com.example.quadroagil.data.repository.ProjetoRepository
+import com.example.quadroagil.data.repository.UsuarioRepository
 import kotlinx.coroutines.launch
 
 class CriarProjetoViewModel(
-    private val repository: ProjetoRepository = ProjetoRepository()
+    private val projetoRepository: ProjetoRepository = ProjetoRepository(),
+    private val usuarioRepository: UsuarioRepository = UsuarioRepository(),
+    private val participacaoRepository: ParticipacaoRepository = ParticipacaoRepository()
 ) : ViewModel() {
 
     private val _erro = MutableLiveData<String>()
@@ -35,22 +40,53 @@ class CriarProjetoViewModel(
             return
         }
 
-        val projeto = Projeto(
-            id = "",
-            nome = nome,
-            area = area,
-            email = email,
-            descricao = descricao,
-            dataCriacao = null, // será preenchido pelo repository
-            idResumoProjeto = ""
-        )
-
         viewModelScope.launch {
-            val resultado = repository.criarProjeto(projeto)
+
+            // ============================
+            // 1) Buscar usuário logado no Firestore
+            // ============================
+            val usuarioLogado = usuarioRepository.obterUsuarioLogado()
+
+            if (usuarioLogado == null) {
+                _erro.value = "Usuário não encontrado no banco de dados"
+                return@launch
+            }
+
+            // ============================
+            // 2) Criar objeto Projeto
+            // ============================
+            val projeto = Projeto(
+                id = "",
+                nome = nome,
+                area = area,
+                email = email,
+                descricao = descricao,
+                dataCriacao = null,
+                idResumoProjeto = ""
+            )
+
+            // ============================
+            // 3) Salvar projeto no Firestore
+            // ============================
+            val resultado = projetoRepository.criarProjeto(projeto)
 
             resultado.fold(
-                onSuccess = { _sucesso.value = it },
-                onFailure = { _erro.value = it.message ?: "Erro desconhecido" }
+                onSuccess = { projetoCriado ->
+
+                    // ============================
+                    // 4) Criar Participacao como DONO
+                    // ============================
+                    participacaoRepository.adicionarParticipacao(
+                        idUsuario = usuarioLogado.id,   // <-- AQUI vai o ID correto do usuário
+                        idProjeto = projetoCriado.id,
+                        papel = Papel.DONO
+                    )
+
+                    _sucesso.value = projetoCriado
+                },
+                onFailure = { erro ->
+                    _erro.value = erro.message ?: "Erro ao criar projeto"
+                }
             )
         }
     }
