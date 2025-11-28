@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.quadroagil.data.model.Projeto
 import com.example.quadroagil.databinding.FragmentColaboracoesBinding
 import com.example.quadroagil.ui.projeto.TaskActivity
+import com.example.quadroagil.ui.viewmodel.ColaboracoesViewModel
 
 class ColaboracoesFragment : Fragment() {
 
@@ -17,42 +21,57 @@ class ColaboracoesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var adapter: ProjetoAdapter
+    private val viewModel: ColaboracoesViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentColaboracoesBinding.inflate(inflater, container, false)
 
-//        adapter = ProjetoAdapter(
-//            mutableListOf("Projeto 1", "Projeto 2", "Projeto 3"),
-//            onRemoveClick = { projeto ->
-//                mostrarDialogoSairProjeto(projeto)
-//            },
-//            onItemClick = { projeto ->
-//                abrirTaskActivity(projeto)
-//            }
-//        )
+        adapter = ProjetoAdapter(
+            projetos = mutableListOf(),
+            onRemoveClick = { projeto -> mostrarDialogoSair(projeto) },
+            onItemClick = { projeto -> abrirTaskActivity(projeto) }
+        )
 
         binding.rvProjetos.layoutManager = LinearLayoutManager(requireContext())
         binding.rvProjetos.adapter = adapter
 
+        observarViewModel()
+        viewModel.carregarColaboracoes()
 
         return binding.root
     }
 
-    private fun abrirTaskActivity(projeto: String) {
+    private fun observarViewModel() {
+        viewModel.projetos.observe(viewLifecycleOwner) { lista ->
+            adapter.atualizarLista(lista)
+        }
+
+        viewModel.erro.observe(viewLifecycleOwner) { msg ->
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.sucesso.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), "Você saiu do projeto.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun abrirTaskActivity(projeto: Projeto) {
         val intent = Intent(requireContext(), TaskActivity::class.java)
-        intent.putExtra("projetoNome", projeto) // Enviando nome do projeto
+        intent.putExtra("projetoId", projeto.id)
+        intent.putExtra("projetoNome", projeto.nome)
         startActivity(intent)
     }
 
-    private fun mostrarDialogoSairProjeto(nome: String) {
+    private fun mostrarDialogoSair(projeto: Projeto) {
         AlertDialog.Builder(requireContext())
             .setTitle("Sair do projeto")
-            .setMessage("Deseja realmente sair de \"$nome\"?")
+            .setMessage("Deseja realmente sair de \"${projeto.nome}\"?")
             .setPositiveButton("Sim") { _, _ ->
-                // futuramente remover do Firestore
+                viewModel.sairDoProjeto(projeto.id)
             }
             .setNegativeButton("Cancelar", null)
             .show()
