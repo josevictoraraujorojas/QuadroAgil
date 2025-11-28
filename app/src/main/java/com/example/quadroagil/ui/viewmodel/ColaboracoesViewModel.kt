@@ -22,7 +22,7 @@ class ColaboracoesViewModel(
     private val _erro = MutableLiveData<String>()
     val erro: LiveData<String> get() = _erro
 
-    // Adicionado: LiveData para sinalizar sucesso em operações (ex: sair do projeto)
+    // LiveData para sinalizar sucesso em operações
     private val _sucesso = MutableLiveData<Boolean>()
     val sucesso: LiveData<Boolean> get() = _sucesso
 
@@ -69,7 +69,7 @@ class ColaboracoesViewModel(
 
         viewModelScope.launch {
             try {
-                // 1) Buscar a participação específica (do usuário logado nesse projeto)
+                // Buscar a participação específica (do usuário logado nesse projeto)
                 val participacoes = participacaoRepository.listarProjetosDoUsuario(idUsuario)
                 val participacao = participacoes.find { it.idProjeto == idProjeto }
 
@@ -78,7 +78,7 @@ class ColaboracoesViewModel(
                     return@launch
                 }
 
-                // 2) Remover a participação (sair do projeto)
+                // Remover a participação (sair do projeto)
                 val resultado = participacaoRepository.removerParticipacao(participacao.id)
                 resultado.fold(
                     onSuccess = {
