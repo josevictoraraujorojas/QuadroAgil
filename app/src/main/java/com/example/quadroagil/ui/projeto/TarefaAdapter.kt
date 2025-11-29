@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quadroagil.data.model.Nota
 import com.example.quadroagil.databinding.ItemTarefaBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TarefaAdapter(
     private val onEditar: (Nota) -> Unit,
@@ -20,6 +22,16 @@ class TarefaAdapter(
             binding.nota = nota
             binding.onEditar = onEditar
             binding.onExcluir = onExcluir
+
+            // Título e descrição
+            binding.txtNome.text = nota.titulo
+            binding.txtDescricao.text = nota.descricao
+
+            // Datas formatadas
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
+            binding.txtDataInicio.text = "Início: " + (nota.dataInicio?.let { sdf.format(it) } ?: "Sem data")
+            binding.txtDataFim.text = "Fim: " + (nota.dataFim?.let { sdf.format(it) } ?: "Sem data")
+
             binding.executePendingBindings()
         }
     }

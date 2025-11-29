@@ -32,7 +32,9 @@ class TarefasFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // pega idProjeto dos argumentos passados pela Activity
         idProjeto = arguments?.getString("idProjeto") ?: ""
+        println("DEBUG: idProjeto=$idProjeto")
     }
 
     override fun onCreateView(

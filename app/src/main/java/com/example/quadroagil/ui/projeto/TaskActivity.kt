@@ -10,32 +10,43 @@ class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTaskBinding
 
+    // Id e nome do projeto vindo do Intent
+    private lateinit var idProjeto: String
+    private lateinit var nomeProjeto: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Recebe os dados do projeto
+        idProjeto = intent.getStringExtra("projetoId") ?: ""
+        nomeProjeto = intent.getStringExtra("projetoNome") ?: "Projeto"
 
-        val nomeProjeto = intent.getStringExtra("projetoNome")
-        binding.toolbarTask.title = nomeProjeto ?: "Projeto"
+        // Configura toolbar
+        binding.toolbarTask.title = nomeProjeto
         setSupportActionBar(binding.toolbarTask)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbarTask.setNavigationOnClickListener { finish() }
 
+        // Fragment inicial: Tarefas
+        replaceFragment(TarefasFragment().apply {
+            arguments = Bundle().apply { putString("idProjeto", idProjeto) }
+        })
 
-        replaceFragment(TarefasFragment())
-
-
+        // Configura BottomNavigation
         binding.bottomNavigationTask.selectedItemId = R.id.nav_tarefas
-
-
         binding.bottomNavigationTask.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_visao_geral -> replaceFragment(VisaoGeralFragment())
-                R.id.nav_tarefas -> replaceFragment(TarefasFragment())
-                R.id.nav_equipe -> replaceFragment(EquipeFragment())
-                R.id.nav_editar -> replaceFragment(EditarProjetoFragment())
+            val fragment: Fragment? = when (item.itemId) {
+                R.id.nav_visao_geral -> VisaoGeralFragment()
+                R.id.nav_tarefas -> TarefasFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
+                }
+                R.id.nav_equipe -> EquipeFragment()
+                R.id.nav_editar -> EditarProjetoFragment()
+                else -> null
             }
+            fragment?.let { replaceFragment(it) }
             true
         }
     }
@@ -43,6 +54,7 @@ class TaskActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(binding.fragmentContainer.id, fragment)
+            .addToBackStack(null)
             .commit()
     }
 }
