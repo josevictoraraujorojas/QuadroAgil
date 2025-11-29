@@ -4,87 +4,146 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.quadroagil.data.model.Nota
+import com.example.quadroagil.data.model.Status
 import com.example.quadroagil.databinding.FragmentProjetoDetalhesBinding
-import com.example.quadroagil.model.Tarefa
+import com.example.quadroagil.ui.adapter.TarefaAdapter
+import com.example.quadroagil.ui.viewmodel.projeto.TarefasViewModel
+import com.example.quadroagil.ui.viewmodel.projeto.TarefasViewModelFactory
 
 class TarefasFragment : Fragment() {
 
     private lateinit var binding: FragmentProjetoDetalhesBinding
 
-    private val tarefasMock = listOf(
-        Tarefa("1", "UX/UI", "Refazer tela inicial", "17/02", "afazer"),
-        Tarefa("2", "API", "Criar endpoint", "18/02", "fazendo"),
-        Tarefa("3", "Correções", "Arrumar login", "21/02", "feito")
-    )
+    // PEGAR idProjeto vindo do fragment anterior
+    private lateinit var idProjeto: String
+
+    private val viewModel: TarefasViewModel by viewModels {
+        TarefasViewModelFactory(idProjeto)
+    }
+
+    private lateinit var adapterAfazer: TarefaAdapter
+    private lateinit var adapterFazendo: TarefaAdapter
+    private lateinit var adapterFeito: TarefaAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        idProjeto = arguments?.getString("idProjeto") ?: ""
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentProjetoDetalhesBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        configurarSecoes()
+        configurarAdapters()
+        observarViewModel()
+        configurarBotoes()
     }
 
-    private fun configurarSecoes() {
+    // -----------------------
+    // CONFIGURAÇÃO DOS ADAPTERS
+    // -----------------------
+    private fun configurarAdapters() {
+        adapterAfazer = TarefaAdapter(
+            onEditar = { abrirEditar(it) },
+            onExcluir = { confirmarExcluir(it) }
+        )
+        adapterFazendo = TarefaAdapter(
+            onEditar = { abrirEditar(it) },
+            onExcluir = { confirmarExcluir(it) }
+        )
+        adapterFeito = TarefaAdapter(
+            onEditar = { abrirEditar(it) },
+            onExcluir = { confirmarExcluir(it) }
+        )
 
-        val afazer = tarefasMock.filter { it.status == "afazer" }
-        val fazendo = tarefasMock.filter { it.status == "fazendo" }
-        val feito = tarefasMock.filter { it.status == "feito" }
+        binding.secAfazer.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.secAfazer.recycler.adapter = adapterAfazer
 
-        configurarRecycler(binding.secAfazer.recycler, afazer)
-        configurarRecycler(binding.secFazendo.recycler, fazendo)
-        configurarRecycler(binding.secFeito.recycler, feito)
+        binding.secFazendo.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.secFazendo.recycler.adapter = adapterFazendo
 
-        // Titulos
+        binding.secFeito.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.secFeito.recycler.adapter = adapterFeito
+    }
+
+    // -----------------------
+    // OBSERVERS DO VIEWMODEL
+    // -----------------------
+    private fun observarViewModel() {
+        viewModel.notasAfazer.observe(viewLifecycleOwner) {
+            adapterAfazer.submitList(it)
+        }
+        viewModel.notasFazendo.observe(viewLifecycleOwner) {
+            adapterFazendo.submitList(it)
+        }
+        viewModel.notasFeito.observe(viewLifecycleOwner) {
+            adapterFeito.submitList(it)
+        }
+    }
+
+    // -----------------------
+    // BOTÕES "+"
+    // -----------------------
+    private fun configurarBotoes() {
         binding.secAfazer.txtTitulo.text = "A Fazer"
         binding.secFazendo.txtTitulo.text = "Fazendo"
         binding.secFeito.txtTitulo.text = "Feito"
 
-        // Eventos do botão +
-        binding.secAfazer.btnAdd.setOnClickListener { adicionarTarefa("afazer") }
-        binding.secFazendo.btnAdd.setOnClickListener { adicionarTarefa("fazendo") }
-        binding.secFeito.btnAdd.setOnClickListener { adicionarTarefa("feito") }
+        binding.secAfazer.btnAdd.setOnClickListener {
+            abrirAdicionar(Status.AFAZER)
+        }
+        binding.secFazendo.btnAdd.setOnClickListener {
+            abrirAdicionar(Status.FAZENDO)
+        }
+        binding.secFeito.btnAdd.setOnClickListener {
+            abrirAdicionar(Status.FEITO)
+        }
     }
 
-    private fun configurarRecycler(recycler: RecyclerView, lista: List<Tarefa>) {
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = TarefaAdapter(
-            lista,
-            onEditar = { tarefa ->
-                abrirFragment(EditarTarefaFragment.newInstance(tarefa))
-            },
-            onExcluir = { tarefa ->
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Excluir tarefa?")
-                    .setMessage("Deseja excluir '${tarefa.nome}'?")
-                    .setPositiveButton("Sim") { _, _ ->
-                        Toast.makeText(requireContext(), "Excluído", Toast.LENGTH_SHORT).show()
-                    }
-                    .setNegativeButton("Cancelar", null)
-                    .show()
-            }
-        )
+    // -----------------------
+    // NAVEGAÇÃO PARA FRAGMENTS
+    // -----------------------
+    private fun abrirAdicionar(status: Status) {
+        val fragment = AdicionarTarefaFragment.newInstance(status, idProjeto)
+        abrirFragment(fragment)
     }
 
-    private fun adicionarTarefa(status: String) {
-        abrirFragment(AdicionarTarefaFragment.newInstance(status))
+    private fun abrirEditar(nota: Nota) {
+        val fragment = EditarTarefaFragment.newInstance(nota)
+        abrirFragment(fragment)
     }
 
     private fun abrirFragment(fragment: Fragment) {
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(com.example.quadroagil.R.id.fragmentContainer, fragment) // container da Home
+            .replace(com.example.quadroagil.R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    // -----------------------
+    // EXCLUIR NOTA
+    // -----------------------
+    private fun confirmarExcluir(nota: Nota) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Excluir tarefa?")
+            .setMessage("Deseja excluir '${nota.titulo}'?")
+            .setPositiveButton("Sim") { _, _ ->
+                viewModel.removerNota(nota)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 }

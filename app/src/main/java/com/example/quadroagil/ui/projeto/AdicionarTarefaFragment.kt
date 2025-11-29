@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.quadroagil.data.model.Status
 import com.example.quadroagil.databinding.FragmentAdicionarTarefaBinding
 
 class AdicionarTarefaFragment : Fragment() {
 
     private lateinit var binding: FragmentAdicionarTarefaBinding
     private var status: String? = null
+
+    private var idProjeto: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +58,11 @@ class AdicionarTarefaFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(status: String): AdicionarTarefaFragment {
+        fun newInstance(status: Status, idProjeto: String): AdicionarTarefaFragment {
             val fragment = AdicionarTarefaFragment()
             val args = Bundle()
-            args.putString("status", status)
+            args.putString("status", status.name)
+            args.putString("idProjeto", idProjeto)
             fragment.arguments = args
             return fragment
         }

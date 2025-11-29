@@ -2,6 +2,7 @@ package com.example.quadroagil.data.repository
 
 import com.example.quadroagil.data.model.Nota
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.tasks.await
 
 class NotaRepository(
@@ -73,5 +74,16 @@ class NotaRepository(
             .get()
             .await()
             .toObjects(Nota::class.java)
+    }
+
+    fun observarNotasDoProjeto(idProjeto: String, callback: (List<Nota>) -> Unit): ListenerRegistration {
+        return db.collection("notas")
+            .whereEqualTo("idProjeto", idProjeto)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) return@addSnapshotListener
+
+                val notas = snapshot.toObjects(Nota::class.java)
+                callback(notas)
+            }
     }
 }

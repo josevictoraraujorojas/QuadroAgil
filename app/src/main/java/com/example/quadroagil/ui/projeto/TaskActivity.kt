@@ -15,36 +15,26 @@ class TaskActivity : AppCompatActivity() {
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Toolbar
+
         val nomeProjeto = intent.getStringExtra("projetoNome")
         binding.toolbarTask.title = nomeProjeto ?: "Projeto"
         setSupportActionBar(binding.toolbarTask)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.toolbarTask.setNavigationOnClickListener { finish() }
 
-        // Fragmento inicial — Tarefas
+
         replaceFragment(TarefasFragment())
 
-        // Bottom Navigation
+
+        binding.bottomNavigationTask.selectedItemId = R.id.nav_tarefas
+
+
         binding.bottomNavigationTask.setOnItemSelectedListener { item ->
             when (item.itemId) {
-
-                R.id.nav_visao_geral -> {
-                    replaceFragment(VisaoGeralFragment())
-                }
-
-                R.id.nav_tarefas -> {
-                    replaceFragment(TarefasFragment())
-                }
-
-                R.id.nav_equipe -> {
-                    replaceFragment(EquipeFragment())
-                }
-
-                R.id.nav_editar -> {
-                    replaceFragment(EditarProjetoFragment())
-                }
+                R.id.nav_visao_geral -> replaceFragment(VisaoGeralFragment())
+                R.id.nav_tarefas -> replaceFragment(TarefasFragment())
+                R.id.nav_equipe -> replaceFragment(EquipeFragment())
+                R.id.nav_editar -> replaceFragment(EditarProjetoFragment())
             }
             true
         }

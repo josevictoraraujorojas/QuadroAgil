@@ -6,17 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.quadroagil.data.model.Nota
 import com.example.quadroagil.databinding.FragmentEditarTarefaBinding
 import com.example.quadroagil.model.Tarefa
 
 class EditarTarefaFragment : Fragment() {
 
     private lateinit var binding: FragmentEditarTarefaBinding
-    private var tarefa: Tarefa? = null
+    private var tarefa: Nota? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tarefa = arguments?.getSerializable("tarefa") as? Tarefa
+        tarefa = arguments?.getSerializable("nota") as? Nota
     }
 
     override fun onCreateView(
@@ -37,11 +38,11 @@ class EditarTarefaFragment : Fragment() {
 
     private fun preencherCampos() {
         tarefa?.let { t ->
-            binding.edtTitulo.setText(t.nome)
+            binding.edtTitulo.setText(t.titulo)
             binding.edtDescricao.setText(t.descricao)
-            binding.btnDataInicio.text = t.dataEntrega
-            binding.btnDataFim.text = t.dataEntrega
-            binding.edtResponsavel.setText(t.responsavel)
+            binding.btnDataInicio.text = t.dataInicio as CharSequence?
+            binding.btnDataFim.text = t.dataFim as CharSequence?
+            binding.edtResponsavel.setText(t.idUsuario)
         }
     }
 
@@ -64,7 +65,7 @@ class EditarTarefaFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(tarefa: Tarefa): EditarTarefaFragment {
+        fun newInstance(tarefa: Nota): EditarTarefaFragment {
             val f = EditarTarefaFragment()
             val args = Bundle()
             args.putSerializable("tarefa", tarefa)
