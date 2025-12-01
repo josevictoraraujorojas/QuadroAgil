@@ -27,6 +27,41 @@ class NotaRepository(
         }
     }
 
+    suspend fun alterarStatusNota(idNota: String, novoStatus: String): Boolean {
+        return try {
+            val ref = db.collection("notas").document(idNota)
+
+            // Buscar a nota antes
+            val notaExistente = ref.get().await().toObject(Nota::class.java)
+                ?: return false
+
+            // Atualizar o status
+            ref.update("status", novoStatus).await()
+
+            // Atualizar resumo
+            resumoRepo.atualizarResumo(notaExistente.idProjeto)
+
+            true
+
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+
+    suspend fun buscarNotaPorId(idNota: String): Nota? {
+        return try {
+            val doc = db.collection("notas")
+                .document(idNota)
+                .get()
+                .await()
+
+            doc.toObject(Nota::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     // ATUALIZAR
     suspend fun atualizarNota(nota: Nota): Result<Unit> {
         return try {

@@ -43,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <!-- Datas -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_marginTop="8dp"
@@ -67,11 +68,20 @@
                     android:textColor="@android:color/black"/>
             </LinearLayout>
 
+            <!-- Spinner de status -->
+            <Spinner
+                android:id="@+id/spinnerStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <!-- Botões -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="end">
+                android:gravity="end"
+                android:layout_marginTop="8dp">
 
                 <ImageButton
                     android:id="@+id/btnEditar"

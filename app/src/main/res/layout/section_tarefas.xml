@@ -18,8 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="16dp">
 
+        <!-- Cabeçalho da seção -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,11 +45,13 @@
                 app:tint="@android:color/white"/>
         </LinearLayout>
 
+        <!-- RecyclerView da seção com altura limitada -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="true"
+            android:scrollbars="vertical"/>
     </LinearLayout>
 
 </layout>

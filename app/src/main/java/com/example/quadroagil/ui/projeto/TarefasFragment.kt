@@ -19,23 +19,16 @@ class TarefasFragment : Fragment() {
 
     private lateinit var binding: FragmentProjetoDetalhesBinding
 
-    // PEGAR idProjeto vindo do fragment anterior
-    private lateinit var idProjeto: String
-
+    // Agora você NÃO cria mais o idProjeto aqui
     private val viewModel: TarefasViewModel by viewModels {
-        TarefasViewModelFactory(idProjeto)
+        TarefasViewModelFactory(
+            requireArguments().getString("idProjeto") ?: ""
+        )
     }
 
     private lateinit var adapterAfazer: TarefaAdapter
     private lateinit var adapterFazendo: TarefaAdapter
     private lateinit var adapterFeito: TarefaAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // pega idProjeto dos argumentos passados pela Activity
-        idProjeto = arguments?.getString("idProjeto") ?: ""
-        println("DEBUG: idProjeto=$idProjeto")
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,9 +47,6 @@ class TarefasFragment : Fragment() {
         configurarBotoes()
     }
 
-    // -----------------------
-    // CONFIGURAÇÃO DOS ADAPTERS
-    // -----------------------
     private fun configurarAdapters() {
         adapterAfazer = TarefaAdapter(
             onEditar = { abrirEditar(it) },
@@ -81,9 +71,6 @@ class TarefasFragment : Fragment() {
         binding.secFeito.recycler.adapter = adapterFeito
     }
 
-    // -----------------------
-    // OBSERVERS DO VIEWMODEL
-    // -----------------------
     private fun observarViewModel() {
         viewModel.notasAfazer.observe(viewLifecycleOwner) {
             adapterAfazer.submitList(it)
@@ -96,9 +83,6 @@ class TarefasFragment : Fragment() {
         }
     }
 
-    // -----------------------
-    // BOTÕES "+"
-    // -----------------------
     private fun configurarBotoes() {
         binding.secAfazer.txtTitulo.text = "A Fazer"
         binding.secFazendo.txtTitulo.text = "Fazendo"
@@ -115,11 +99,11 @@ class TarefasFragment : Fragment() {
         }
     }
 
-    // -----------------------
-    // NAVEGAÇÃO PARA FRAGMENTS
-    // -----------------------
     private fun abrirAdicionar(status: Status) {
-        val fragment = AdicionarTarefaFragment.newInstance(status, idProjeto)
+        val fragment = AdicionarTarefaFragment.newInstance(
+            status,
+            requireArguments().getString("idProjeto") ?: ""
+        )
         abrirFragment(fragment)
     }
 
@@ -135,9 +119,6 @@ class TarefasFragment : Fragment() {
             .commit()
     }
 
-    // -----------------------
-    // EXCLUIR NOTA
-    // -----------------------
     private fun confirmarExcluir(nota: Nota) {
         AlertDialog.Builder(requireContext())
             .setTitle("Excluir tarefa?")

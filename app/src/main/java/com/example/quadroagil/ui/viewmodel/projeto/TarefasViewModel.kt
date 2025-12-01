@@ -80,4 +80,10 @@ class TarefasViewModel(
             repository.atualizarNota(nota)
         }
     }
+
+    fun alterarStatusNota(idNota: String, novoStatus: Status) {
+        viewModelScope.launch {
+            repository.alterarStatusNota(idNota, novoStatus.name)
+        }
+    }
 }
