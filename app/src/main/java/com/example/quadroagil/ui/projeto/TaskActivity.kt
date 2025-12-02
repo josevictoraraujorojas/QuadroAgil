@@ -38,7 +38,9 @@ class TaskActivity : AppCompatActivity() {
         binding.bottomNavigationTask.selectedItemId = R.id.nav_tarefas
         binding.bottomNavigationTask.setOnItemSelectedListener { item ->
             val fragment: Fragment? = when (item.itemId) {
-                R.id.nav_visao_geral -> VisaoGeralFragment()
+                R.id.nav_visao_geral -> VisaoGeralFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
+                }
                 R.id.nav_tarefas -> TarefasFragment().apply {
                     arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
