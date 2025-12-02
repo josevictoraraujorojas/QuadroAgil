@@ -19,14 +19,14 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicia com "Meus Projetos"
-        replaceFragment(MeusProjetosFragment())
+        // Inicia com "Colaborações"
+        replaceFragment(ColaboracoesFragment())
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_colaboracoes -> replaceFragment(ColaboracoesFragment())
                 R.id.nav_meus_projetos -> replaceFragment(MeusProjetosFragment())
-                R.id.nav_sair -> mostrarDialogoSair()
+                R.id.nav_perfil -> replaceFragment(PerfilFragment())
             }
             true
         }
@@ -36,7 +36,7 @@ class HomeActivity : AppCompatActivity() {
         val auth = FirebaseAuth.getInstance()
         auth.signOut()
 
-        // Volta para a tela inicial (MainActivity)
+        // Volta para a tela inicial
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
@@ -47,7 +47,7 @@ class HomeActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun mostrarDialogoSair() {
+    fun mostrarDialogoSair() {
         AlertDialog.Builder(this)
             .setTitle("Sair")
             .setMessage("Deseja realmente sair?")

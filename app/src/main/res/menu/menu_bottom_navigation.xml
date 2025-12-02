@@ -8,7 +8,7 @@
         android:icon="@drawable/ic_projetos"
         android:title="Meus Projetos" />
     <item
-        android:id="@+id/nav_sair"
-        android:icon="@drawable/ic_logout"
-        android:title="Sair" />
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_person"
+        android:title="Perfil" />
 </menu>

@@ -2,6 +2,7 @@ package com.example.quadroagil.data.repository
 
 import com.example.quadroagil.data.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -60,5 +61,83 @@ class UsuarioRepository(
 
         return snapshot.documents.firstOrNull()?.toObject(Usuario::class.java)
             ?.copy(id = snapshot.documents.first().id)
+    }
+
+    suspend fun obterUsuarioAtual(): Result<Usuario> {
+        return try {
+            val uid = auth.currentUser?.uid ?: throw Exception("Usuário não está logado")
+
+            val document = db.collection("usuarios").document(uid).get().await()
+
+            if (document.exists()) {
+                val usuario = document.toObject(Usuario::class.java)
+                // Garante que o ID e Email estejam preenchidos corretamente
+                val usuarioFinal = usuario?.copy(
+                    id = uid,
+                    email = auth.currentUser?.email ?: ""
+                )
+                if (usuarioFinal != null) {
+                    Result.success(usuarioFinal)
+                } else {
+                    Result.failure(Exception("Erro ao converter dados do usuário"))
+                }
+            } else {
+                Result.failure(Exception("Perfil não encontrado no banco de dados"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Atualizar apenas dados cadastrais
+    suspend fun atualizarDadosUsuario(nome: String, telefone: String): Result<Unit> {
+        return try {
+            val uid = auth.currentUser?.uid ?: throw Exception("Usuário não está logado")
+
+            val updates = mapOf(
+                "nome" to nome,
+                "telefone" to telefone
+            )
+
+            db.collection("usuarios").document(uid).update(updates).await()
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Atualizar Senha
+    suspend fun atualizarSenha(novaSenha: String): Result<Unit> {
+        return try {
+            val user = auth.currentUser ?: throw Exception("Usuário não está logado")
+
+            user.updatePassword(novaSenha).await()
+            Result.success(Unit)
+
+        } catch (e: FirebaseAuthRecentLoginRequiredException) {
+            Result.failure(Exception("Por segurança, faça logout e login novamente antes de trocar a senha."))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun atualizarEmail(novoEmail: String): Result<Unit> {
+        return try {
+            val user = auth.currentUser ?: throw Exception("Usuário não logado")
+
+            // Atualiza no Auth
+            user.updateEmail(novoEmail).await()
+
+            // Atualiza no Firestore
+            db.collection("usuarios").document(user.uid)
+                .update("email", novoEmail)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            // Retorna o erro para o ViewModel mostrar na tela
+            Result.failure(e)
+        }
     }
 }
