@@ -10,4 +10,5 @@
     <color name="status_afazer">#B36B6B</color>
     <color name="status_fazendo">#5A3A90</color>
     <color name="status_feito">#D9C8FF</color>
+    <color name="ic_launcher_background">#6750A4</color>
 </resources>
