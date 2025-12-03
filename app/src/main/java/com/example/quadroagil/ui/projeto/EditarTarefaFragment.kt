@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.quadroagil.data.model.Nota
@@ -33,6 +34,18 @@ class EditarTarefaFragment : Fragment() {
         binding = FragmentEditarTarefaBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+
+        val activity = requireActivity() as AppCompatActivity
+        activity.setSupportActionBar(binding.toolbarTask)
+
+        activity.supportActionBar?.apply {
+            title = "Editar Tarefa"
+            setDisplayHomeAsUpEnabled(true)
+        }
+
+        binding.toolbarTask.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
 
         configurarSpinner()
         configurarDatePickers()

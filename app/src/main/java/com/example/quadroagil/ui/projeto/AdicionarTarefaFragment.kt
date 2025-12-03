@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.quadroagil.data.model.Status
@@ -26,6 +27,8 @@ class AdicionarTarefaFragment : Fragment() {
         super.onCreate(savedInstanceState)
         status = arguments?.getSerializable("status") as? Status ?: Status.AFAZER
         idProjeto = arguments?.getString("idProjeto") ?: ""
+
+
     }
 
     override fun onCreateView(
@@ -34,6 +37,19 @@ class AdicionarTarefaFragment : Fragment() {
     ): View {
         binding = FragmentAdicionarTarefaBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
+
+
+        val activity = requireActivity() as AppCompatActivity
+        activity.setSupportActionBar(binding.toolbarTask)
+
+        activity.supportActionBar?.apply {
+            title = "Adicionar Tarefa"
+            setDisplayHomeAsUpEnabled(true)
+        }
+
+        binding.toolbarTask.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
 
         viewModel = ViewModelProvider(
             this,

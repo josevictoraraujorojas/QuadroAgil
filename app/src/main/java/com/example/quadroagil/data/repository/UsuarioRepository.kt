@@ -51,6 +51,18 @@ class UsuarioRepository(
             .toObject(Usuario::class.java)
     }
 
+    suspend fun buscarPorEmail(email: String): Usuario? {
+        val snapshot = db.collection("usuarios")
+            .whereEqualTo("email", email)
+            .get()
+            .await()
+
+        // Se não existir, retorna null
+        if (snapshot.isEmpty) return null
+
+        return snapshot.documents[0].toObject(Usuario::class.java)
+    }
+
     suspend fun listarUsuariosDoProjetoSimples(idProjeto: String): List<UsuarioSimples> {
         val participacoes = ParticipacaoRepository().listarUsuariosDoProjeto(idProjeto)
         return participacoes.mapNotNull { p ->

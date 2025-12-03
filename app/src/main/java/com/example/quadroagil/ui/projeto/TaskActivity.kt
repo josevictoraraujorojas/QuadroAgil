@@ -23,12 +23,6 @@ class TaskActivity : AppCompatActivity() {
         idProjeto = intent.getStringExtra("projetoId") ?: ""
         nomeProjeto = intent.getStringExtra("projetoNome") ?: "Projeto"
 
-        // Configura toolbar
-        binding.toolbarTask.title = nomeProjeto
-        setSupportActionBar(binding.toolbarTask)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbarTask.setNavigationOnClickListener { finish() }
-
         // Fragment inicial: Tarefas
         replaceFragment(TarefasFragment().apply {
             arguments = Bundle().apply { putString("idProjeto", idProjeto) }
