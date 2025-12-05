@@ -1,101 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#FFFFFF">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.quadroagil.ui.viewmodel.projeto.EditarProjetoViewModel" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="#FFFFFF">
 
-        <!-- TÍTULO SUPERIOR -->
-        <TextView
-            android:id="@+id/txtTitulo"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Editar Projeto"
-            android:textColor="#000000"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="20dp" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <!-- Nome do Projeto -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nome do Projeto"
-            android:textSize="16sp"
-            android:textColor="#555555"
-            android:layout_marginTop="10dp" />
+            <TextView
+                android:id="@+id/txtTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Editar Projeto"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp" />
 
-        <EditText
-            android:id="@+id/inputNome"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/edittext_fundo"
-            android:padding="12dp"
-            android:textSize="16sp" />
+            <!-- Nome -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nome do Projeto"
+                android:textSize="16sp"
+                android:textColor="#555555"
+                android:layout_marginTop="10dp" />
 
-        <!-- Área -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Área"
-            android:textSize="16sp"
-            android:textColor="#555555"
-            android:layout_marginTop="20dp" />
+            <EditText
+                android:id="@+id/inputNome"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittext_fundo"
+                android:text="@={viewModel.nome}"
+                android:padding="12dp"
+                android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/inputArea"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/edittext_fundo"
-            android:padding="12dp"
-            android:textSize="16sp" />
+            <!-- Área -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Área"
+                android:textSize="16sp"
+                android:textColor="#555555"
+                android:layout_marginTop="20dp" />
 
-        <!-- Email -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email"
-            android:textSize="16sp"
-            android:textColor="#555555"
-            android:layout_marginTop="20dp" />
+            <EditText
+                android:id="@+id/inputArea"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittext_fundo"
+                android:text="@={viewModel.area}"
+                android:padding="12dp"
+                android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/inputEmail"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/edittext_fundo"
-            android:padding="12dp"
-            android:textSize="16sp" />
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textSize="16sp"
+                android:textColor="#555555"
+                android:layout_marginTop="20dp" />
 
-        <!-- Botão Salvar Alteração -->
-        <Button
-            android:id="@+id/btnSalvar"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Salvar Alteração"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/btn_primario"
-            android:layout_marginTop="40dp"/>
+            <EditText
+                android:id="@+id/inputEmail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittext_fundo"
+                android:text="@={viewModel.email}"
+                android:padding="12dp"
+                android:textSize="16sp" />
 
-        <!-- Botão Sair -->
-        <Button
-            android:id="@+id/btnSair"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:text="Sair do Projeto"
-            android:textSize="18sp"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/btn_vermelho"
-            android:layout_marginTop="20dp" />
+            <!-- Botões -->
+            <Button
+                android:id="@+id/btnSalvar"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Salvar Alteração"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:background="@drawable/btn_primario"
+                android:layout_marginTop="40dp"/>
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btnSair"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Sair do Projeto"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/btn_vermelho"
+                android:layout_marginTop="20dp" />
 
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+</layout>

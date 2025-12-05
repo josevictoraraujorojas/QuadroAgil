@@ -6,96 +6,86 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.quadroagil.R
 import com.example.quadroagil.databinding.FragmentVisaoGeralBinding
-import com.example.quadroagil.model.Tarefa
+import com.example.quadroagil.ui.viewmodel.projeto.VisaoGeralViewModel
+import com.example.quadroagil.ui.viewmodel.projeto.VisaoGeralViewModelFactory
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-
+import kotlinx.coroutines.launch
 
 class VisaoGeralFragment : Fragment() {
 
     private var _binding: FragmentVisaoGeralBinding? = null
     private val binding get() = _binding!!
 
-    private val meses = listOf(
-        "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-        "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-    )
+    private lateinit var idProjeto: String
+
+    private val viewModel: VisaoGeralViewModel by viewModels {
+        VisaoGeralViewModelFactory(idProjeto)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        idProjeto = arguments?.getString("idProjeto")
+            ?: throw IllegalArgumentException("idProjeto é obrigatório!")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentVisaoGeralBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tarefas = gerarMock()
+        // 🔥 Como o id já é passado no constructor do ViewModel,
+        // ele já inicia o listener automaticamente
+        // (não precisa chamar iniciar() mais)
 
-        montarDonuts(tarefas)
-        montarLegenda(tarefas)
-        montarPieChart(tarefas)
-    }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-    private fun gerarMock(): List<Tarefa> {
-        val list = mutableListOf<Tarefa>()
-
-        meses.forEachIndexed { i, _ ->
-            list.add(Tarefa("id1-$i", "Task", "Desc", "10/${i+1}", "afazer"))
-            list.add(Tarefa("id2-$i", "Task", "Desc", "12/${i+1}", "fazendo"))
-            list.add(Tarefa("id3-$i", "Task", "Desc", "15/${i+1}", "feito"))
-        }
-
-        return list
-    }
-
-    private fun montarDonuts(tarefas: List<Tarefa>) {
-        val grid = binding.gridMeses
-        grid.removeAllViews()
-
-        meses.forEachIndexed { idx, mes ->
-            val donut = DonutView(requireContext())
-            val tamanho = (resources.displayMetrics.widthPixels / 4) - 20
-            donut.layoutParams = ViewGroup.LayoutParams(tamanho, tamanho)
-
-            val monthNum = idx + 1
-            val doMes = tarefas.filter { t ->
-                t.dataEntrega.split("/").getOrNull(1)?.toIntOrNull() == monthNum
+                launch { viewModel.naoIniciadas.collect { atualizarGraficos() } }
+                launch { viewModel.emAndamento.collect { atualizarGraficos() } }
+                launch { viewModel.concluidas.collect { atualizarGraficos() } }
             }
-
-            val total = doMes.size
-            val done = doMes.count { it.status == "feito" }
-
-            val percent = if (total == 0) 0f else (done * 100f) / total
-
-            donut.setPercentage(percent)
-            donut.setLabel(mes.take(3)) // Jan, Fev, Mar...
-
-            grid.addView(donut)
         }
     }
 
-    private fun montarLegenda(tarefas: List<Tarefa>) {
-        val afazer = tarefas.count { it.status == "afazer" }
-        val fazendo = tarefas.count { it.status == "fazendo" }
-        val feito = tarefas.count { it.status == "feito" }
+    private fun atualizarGraficos() {
+        montarLegenda(
+            afazer = viewModel.naoIniciadas.value,
+            fazendo = viewModel.emAndamento.value,
+            feito = viewModel.concluidas.value
+        )
 
+        montarPieChart(
+            afazer = viewModel.naoIniciadas.value,
+            fazendo = viewModel.emAndamento.value,
+            feito = viewModel.concluidas.value
+        )
+    }
+
+    private fun montarLegenda(afazer: Int, fazendo: Int, feito: Int) {
         binding.txtAfazer.text = "A Fazer: $afazer"
         binding.txtFazendo.text = "Fazendo: $fazendo"
         binding.txtFeito.text = "Feito: $feito"
     }
 
-    private fun montarPieChart(tarefas: List<Tarefa>) {
-        val afazer = tarefas.count { it.status == "afazer" }
-        val fazendo = tarefas.count { it.status == "fazendo" }
-        val feito = tarefas.count { it.status == "feito" }
-
+    private fun montarPieChart(afazer: Int, fazendo: Int, feito: Int) {
         val entries = listOf(
             PieEntry(afazer.toFloat(), "A Fazer"),
             PieEntry(fazendo.toFloat(), "Fazendo"),
@@ -108,7 +98,6 @@ class VisaoGeralFragment : Fragment() {
             requireContext().getColor(R.color.status_fazendo),
             requireContext().getColor(R.color.status_feito)
         )
-
         ds.valueTextColor = Color.WHITE
         ds.valueTextSize = 12f
 
@@ -118,6 +107,10 @@ class VisaoGeralFragment : Fragment() {
         binding.pieChart.setUsePercentValues(true)
         binding.pieChart.description.isEnabled = false
         binding.pieChart.setDrawEntryLabels(false)
+
+        binding.pieChart.isDrawHoleEnabled = true
+        binding.pieChart.holeRadius = 60f
+        binding.pieChart.transparentCircleRadius = 65f
         binding.pieChart.centerText = "Tarefas"
 
         binding.pieChart.animateY(900, Easing.EaseInOutQuad)

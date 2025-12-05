@@ -1,9 +1,9 @@
 package com.example.quadroagil.data.model
 
 data class Participacao(
-    val id: String = "",
-    val papel: Papel = Papel.COLABORADOR,
-    val idUsuario: String = "",
-    val idProjeto: String = ""
+    var id: String = "",
+    var papel: Papel = Papel.COLABORADOR,
+    var idUsuario: String = "",
+    var idProjeto: String = ""
 )
 

@@ -9,9 +9,24 @@ class ParticipacaoRepository(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
 
-    // ADICIONAR
-    suspend fun adicionarParticipacao(idUsuario: String, idProjeto: String, papel: Papel): Result<Participacao> {
+    suspend fun adicionarParticipacao(
+        idUsuario: String,
+        idProjeto: String,
+        papel: Papel
+    ): Result<Participacao> {
         return try {
+
+
+            val query = db.collection("participacoes")
+                .whereEqualTo("idUsuario", idUsuario)
+                .whereEqualTo("idProjeto", idProjeto)
+                .get()
+                .await()
+
+            if (!query.isEmpty) {
+                return Result.failure(Exception("Usuário já participa deste projeto"))
+            }
+
             val ref = db.collection("participacoes").document()
 
             val participacao = Participacao(
@@ -31,14 +46,30 @@ class ParticipacaoRepository(
     }
 
     // REMOVER
-    suspend fun removerParticipacao(id: String): Result<Unit> {
+    suspend fun removerParticipacao(idUsuario: String, idProjeto: String): Result<Unit> {
         return try {
-            db.collection("participacoes").document(id).delete().await()
+
+            val query = db.collection("participacoes")
+                .whereEqualTo("idUsuario", idUsuario)
+                .whereEqualTo("idProjeto", idProjeto)
+                .get()
+                .await()
+
+            if (query.isEmpty) {
+                return Result.failure(Exception("Participação não encontrada"))
+            }
+
+            val docId = query.documents.first().id
+
+            db.collection("participacoes").document(docId).delete().await()
+
             Result.success(Unit)
+
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
 
     // LISTAR PROJETOS DO USUÁRIO
     suspend fun listarProjetosDoUsuario(idUsuario: String): List<Participacao> {
@@ -56,5 +87,33 @@ class ParticipacaoRepository(
             .get()
             .await()
             .toObjects(Participacao::class.java)
+    }
+
+    fun listenUsuariosDoProjeto(idProjeto: String, callback: (List<Participacao>) -> Unit) {
+        db.collection("participacoes")
+            .whereEqualTo("idProjeto", idProjeto)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) {
+                    callback(emptyList())
+                    return@addSnapshotListener
+                }
+
+                val lista = snapshot.toObjects(Participacao::class.java)
+                callback(lista)
+            }
+    }
+
+    suspend fun buscarParticipacao(idUsuario: String, idProjeto: String): Participacao? {
+        val query = db.collection("participacoes")
+            .whereEqualTo("idUsuario", idUsuario)
+            .whereEqualTo("idProjeto", idProjeto)
+            .get()
+            .await()
+
+        return if (!query.isEmpty) {
+            query.documents.first().toObject(Participacao::class.java)
+        } else {
+            null
+        }
     }
 }

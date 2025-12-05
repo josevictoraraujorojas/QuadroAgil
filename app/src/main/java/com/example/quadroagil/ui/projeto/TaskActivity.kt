@@ -10,42 +10,43 @@ class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTaskBinding
 
+    // Id e nome do projeto vindo do Intent
+    private lateinit var idProjeto: String
+    private lateinit var nomeProjeto: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Toolbar
-        val nomeProjeto = intent.getStringExtra("projetoNome")
-        binding.toolbarTask.title = nomeProjeto ?: "Projeto"
-        setSupportActionBar(binding.toolbarTask)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        binding.toolbarTask.setNavigationOnClickListener { finish() }
+        // Recebe os dados do projeto
+        idProjeto = intent.getStringExtra("projetoId") ?: ""
+        nomeProjeto = intent.getStringExtra("projetoNome") ?: "Projeto"
 
-        // Fragmento inicial — Tarefas
-        replaceFragment(TarefasFragment())
+        // Fragment inicial: Tarefas
+        replaceFragment(TarefasFragment().apply {
+            arguments = Bundle().apply { putString("idProjeto", idProjeto) }
+        })
 
-        // Bottom Navigation
+        // Configura BottomNavigation
+        binding.bottomNavigationTask.selectedItemId = R.id.nav_tarefas
         binding.bottomNavigationTask.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-
-                R.id.nav_visao_geral -> {
-                    replaceFragment(VisaoGeralFragment())
+            val fragment: Fragment? = when (item.itemId) {
+                R.id.nav_visao_geral -> VisaoGeralFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
-
-                R.id.nav_tarefas -> {
-                    replaceFragment(TarefasFragment())
+                R.id.nav_tarefas -> TarefasFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
-
-                R.id.nav_equipe -> {
-                    replaceFragment(EquipeFragment())
+                R.id.nav_equipe -> EquipeFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
-
-                R.id.nav_editar -> {
-                    replaceFragment(EditarProjetoFragment())
+                R.id.nav_editar -> EditarProjetoFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
+                else -> null
             }
+            fragment?.let { replaceFragment(it) }
             true
         }
     }
@@ -53,6 +54,7 @@ class TaskActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(binding.fragmentContainer.id, fragment)
+            .addToBackStack(null)
             .commit()
     }
 }
