@@ -79,7 +79,7 @@ class ColaboracoesViewModel(
                 }
 
                 // Remover a participação (sair do projeto)
-                val resultado = participacaoRepository.removerParticipacao(participacao.id,idProjeto)
+                val resultado = participacaoRepository.removerParticipacao(idUsuario,idProjeto)
                 resultado.fold(
                     onSuccess = {
                         // recarrega lista e sinaliza sucesso
