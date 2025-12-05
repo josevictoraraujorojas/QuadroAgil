@@ -2,6 +2,7 @@ package com.example.quadroagil.ui.viewmodel.projeto
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quadroagil.data.model.Papel
 import com.example.quadroagil.data.repository.ParticipacaoRepository
 import com.example.quadroagil.data.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +21,24 @@ class EquipeViewModel(
     private val _mensagem = MutableStateFlow<String?>(null)
     val mensagem: StateFlow<String?> = _mensagem
 
+    private var usuarioLogadoPapel: Papel? = null
+
     init {
+        carregarUsuarioLogado()
         observarEquipeTempoReal()
     }
 
-    /**
-     * ATUALIZAÇÃO AUTOMÁTICA EM TEMPO REAL
-     */
+    private fun carregarUsuarioLogado() {
+        viewModelScope.launch {
+            val usuarioLogado = repoUsuario.obterUsuarioLogado()
+            if (usuarioLogado != null) {
+                val participacao =
+                    repoParticipacao.buscarParticipacao(usuarioLogado.id, idProjeto)
+                usuarioLogadoPapel = participacao?.papel
+            }
+        }
+    }
+
     private fun observarEquipeTempoReal() {
         repoParticipacao.listenUsuariosDoProjeto(idProjeto) { participacoes ->
             viewModelScope.launch {
@@ -48,16 +60,23 @@ class EquipeViewModel(
 
     fun removerMembro(idUsuario: String) {
         viewModelScope.launch {
+            if (usuarioLogadoPapel != Papel.DONO) {
+                _mensagem.value = "Apenas o dono pode remover membros"
+                return@launch
+            }
+
             try {
                 val result = repoParticipacao.removerParticipacao(idUsuario, idProjeto)
-
                 if (!result.isSuccess) {
                     _mensagem.value = "Erro ao remover membro"
                 }
-
             } catch (e: Exception) {
                 _mensagem.value = "Erro: ${e.message}"
             }
         }
+    }
+
+    fun podeAdicionarMembro(): Boolean {
+        return usuarioLogadoPapel == Papel.DONO
     }
 }

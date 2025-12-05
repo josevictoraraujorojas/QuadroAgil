@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -53,16 +54,13 @@ class EquipeFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        // Inicializa o adapter
         adapter = EquipeAdapter() { idUsuario ->
             confirmarRemocao(idUsuario)
         }
 
-        // 🚀 AQUI ESTAVA O ERRO
         binding.recyclerEquipe.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerEquipe.adapter = adapter
 
-        // Observa lista via Flow
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.listaMembros.collect { lista ->
@@ -71,10 +69,14 @@ class EquipeFragment : Fragment() {
             }
         }
 
-        // Botão de adicionar membro
+        // BLOQUEIO DO BOTÃO ADICIONAR
         binding.btnAddMembro.setOnClickListener {
-            val fragment = AdicionarColaboradorFragment.newInstance(idProjeto)
-            abrirFragment(fragment)
+            if (viewModel.podeAdicionarMembro()) {
+                val fragment = AdicionarColaboradorFragment.newInstance(idProjeto)
+                abrirFragment(fragment)
+            } else {
+                Toast.makeText(requireContext(), "Apenas o dono pode adicionar colaboradores", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
