@@ -59,7 +59,7 @@ class MeusProjetosViewModel(
                 // Deletar participações relacionadas
                 val usuarios = participacaoRepository.listarUsuariosDoProjeto(idProjeto)
                 usuarios.forEach { participacao ->
-                    participacaoRepository.removerParticipacao(participacao.id)
+                    participacaoRepository.removerParticipacao(participacao.id,idProjeto)
                 }
 
                 // Deletar o projeto

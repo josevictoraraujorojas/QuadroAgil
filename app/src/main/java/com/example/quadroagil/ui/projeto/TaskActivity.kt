@@ -38,7 +38,9 @@ class TaskActivity : AppCompatActivity() {
                 R.id.nav_tarefas -> TarefasFragment().apply {
                     arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
-                R.id.nav_equipe -> EquipeFragment()
+                R.id.nav_equipe -> EquipeFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
+                }
                 R.id.nav_editar -> EditarProjetoFragment().apply {
                     arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }

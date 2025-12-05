@@ -69,7 +69,6 @@ class AdicionarColaboradorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Clique no botão usando Binding
         binding.btnAdicionar.setOnClickListener {
             viewModel.adicionarColaborador()
         }
@@ -79,6 +78,18 @@ class AdicionarColaboradorFragment : Fragment() {
             viewModel.mensagem.collectLatest { msg ->
                 msg?.let {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.sucesso.collectLatest { ok ->
+                if (ok) {
+                    Toast.makeText(requireContext(), "Colaborador adicionado!", Toast.LENGTH_SHORT).show()
+
+                    kotlinx.coroutines.delay(300)
+
+                    parentFragmentManager.popBackStack()
                 }
             }
         }

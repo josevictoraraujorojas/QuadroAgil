@@ -15,15 +15,17 @@ class AdicionarColaboradorViewModel(
     private val usuarioRepository: UsuarioRepository
 ) : ViewModel() {
 
-    // Campo usado no XML
     val email = MutableStateFlow("")
 
-    // Estado para exibir mensagens no fragment
     private val _mensagem = MutableStateFlow<String?>(null)
     val mensagem: StateFlow<String?> = _mensagem
 
+    private val _sucesso = MutableStateFlow(false)
+    val sucesso: StateFlow<Boolean> = _sucesso
+
     fun adicionarColaborador() {
         val emailDigitado = email.value.trim()
+
 
         if (emailDigitado.isEmpty()) {
             _mensagem.value = "O email não pode estar vazio"
@@ -32,7 +34,7 @@ class AdicionarColaboradorViewModel(
 
         viewModelScope.launch {
             try {
-                // 1. Buscar ID do usuário pelo email
+
                 val usuario = usuarioRepository.buscarPorEmail(emailDigitado)
 
                 if (usuario == null) {
@@ -40,7 +42,6 @@ class AdicionarColaboradorViewModel(
                     return@launch
                 }
 
-                // 2. Tentar adicionar participação
                 val result = repository.adicionarParticipacao(
                     idUsuario = usuario.id,
                     idProjeto = idProjeto,
@@ -49,9 +50,9 @@ class AdicionarColaboradorViewModel(
 
                 if (result.isSuccess) {
                     _mensagem.value = "Colaborador adicionado com sucesso!"
+                    _sucesso.value = true
                 } else {
 
-                    // PEGAR A MENSAGEM DO REPOSITORY
                     val erro = result.exceptionOrNull()?.message
 
                     if (erro?.contains("já participa") == true) {
