@@ -9,9 +9,6 @@ class ParticipacaoRepository(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
 
-    // -------------------------------------------------------------------------
-    // ADICIONAR PARTICIPAÇÃO APENAS SE O USUÁRIO NÃO PARTICIPA DO PROJETO
-    // -------------------------------------------------------------------------
     suspend fun adicionarParticipacao(
         idUsuario: String,
         idProjeto: String,
@@ -104,5 +101,19 @@ class ParticipacaoRepository(
                 val lista = snapshot.toObjects(Participacao::class.java)
                 callback(lista)
             }
+    }
+
+    suspend fun buscarParticipacao(idUsuario: String, idProjeto: String): Participacao? {
+        val query = db.collection("participacoes")
+            .whereEqualTo("idUsuario", idUsuario)
+            .whereEqualTo("idProjeto", idProjeto)
+            .get()
+            .await()
+
+        return if (!query.isEmpty) {
+            query.documents.first().toObject(Participacao::class.java)
+        } else {
+            null
+        }
     }
 }

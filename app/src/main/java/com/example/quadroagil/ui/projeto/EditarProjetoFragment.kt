@@ -47,6 +47,14 @@ class EditarProjetoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.podeEditar.observe(viewLifecycleOwner) { pode ->
+            binding.btnSalvar.isEnabled = pode
+            binding.inputNome.isEnabled = pode
+            binding.inputArea.isEnabled = pode
+            binding.inputEmail.isEnabled = pode
+        }
+
+
         binding.btnSalvar.setOnClickListener {
             val result = viewModel.salvar()
 
