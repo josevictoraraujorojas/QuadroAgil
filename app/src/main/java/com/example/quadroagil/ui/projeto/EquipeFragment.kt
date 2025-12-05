@@ -20,7 +20,6 @@ import com.example.quadroagil.ui.view.projeto.AdicionarColaboradorFragment
 import com.example.quadroagil.ui.viewmodel.projeto.EquipeViewModel
 import com.example.quadroagil.ui.viewmodel.projeto.EquipeViewModelFactory
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
 
 class EquipeFragment : Fragment() {
 
@@ -69,9 +68,8 @@ class EquipeFragment : Fragment() {
             }
         }
 
-        // BLOQUEIO DO BOTÃO ADICIONAR
         binding.btnAddMembro.setOnClickListener {
-            if (viewModel.podeAdicionarMembro()) {
+            if (viewModel.podeAdicionarRemoverMembro()) {
                 val fragment = AdicionarColaboradorFragment.newInstance(idProjeto)
                 abrirFragment(fragment)
             } else {
@@ -81,14 +79,18 @@ class EquipeFragment : Fragment() {
     }
 
     private fun confirmarRemocao(idUsuario: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Confirmar")
-            .setMessage("Deseja remover este membro da equipe?")
-            .setPositiveButton("Sim") { _, _ ->
-                viewModel.removerMembro(idUsuario)
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        if (viewModel.podeAdicionarRemoverMembro()) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Confirmar")
+                .setMessage("Deseja remover este membro da equipe?")
+                .setPositiveButton("Sim") { _, _ ->
+                    viewModel.removerMembro(idUsuario)
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }else{
+            Toast.makeText(requireContext(), "Apenas o dono pode remover colaboradores", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun abrirFragment(fragment: Fragment) {

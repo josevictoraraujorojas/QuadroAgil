@@ -76,7 +76,7 @@ class EquipeViewModel(
         }
     }
 
-    fun podeAdicionarMembro(): Boolean {
+    fun podeAdicionarRemoverMembro(): Boolean {
         return usuarioLogadoPapel == Papel.DONO
     }
 }
