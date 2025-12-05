@@ -19,11 +19,8 @@ class TarefasFragment : Fragment() {
 
     private lateinit var binding: FragmentProjetoDetalhesBinding
 
-    // Agora você NÃO cria mais o idProjeto aqui
     private val viewModel: TarefasViewModel by viewModels {
-        TarefasViewModelFactory(
-            requireArguments().getString("idProjeto") ?: ""
-        )
+        TarefasViewModelFactory(requireArguments().getString("idProjeto") ?: "")
     }
 
     private lateinit var adapterAfazer: TarefaAdapter
@@ -42,24 +39,21 @@ class TarefasFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configurarAdapters()
-        observarViewModel()
-        configurarBotoes()
+
+        // Observa se usuário foi carregado para configurar UI com permissões
+        viewModel.usuarioCarregado.observe(viewLifecycleOwner) { carregado ->
+            if (carregado) {
+                configurarAdapters()
+                observarViewModel()
+                configurarBotoes()
+            }
+        }
     }
 
     private fun configurarAdapters() {
-        adapterAfazer = TarefaAdapter(
-            onEditar = { abrirEditar(it) },
-            onExcluir = { confirmarExcluir(it) }
-        )
-        adapterFazendo = TarefaAdapter(
-            onEditar = { abrirEditar(it) },
-            onExcluir = { confirmarExcluir(it) }
-        )
-        adapterFeito = TarefaAdapter(
-            onEditar = { abrirEditar(it) },
-            onExcluir = { confirmarExcluir(it) }
-        )
+        adapterAfazer = TarefaAdapter(viewModel, ::abrirEditar, ::confirmarExcluir)
+        adapterFazendo = TarefaAdapter(viewModel, ::abrirEditar, ::confirmarExcluir)
+        adapterFeito = TarefaAdapter(viewModel, ::abrirEditar, ::confirmarExcluir)
 
         binding.secAfazer.recycler.layoutManager = LinearLayoutManager(requireContext())
         binding.secAfazer.recycler.adapter = adapterAfazer
@@ -72,15 +66,9 @@ class TarefasFragment : Fragment() {
     }
 
     private fun observarViewModel() {
-        viewModel.notasAfazer.observe(viewLifecycleOwner) {
-            adapterAfazer.submitList(it)
-        }
-        viewModel.notasFazendo.observe(viewLifecycleOwner) {
-            adapterFazendo.submitList(it)
-        }
-        viewModel.notasFeito.observe(viewLifecycleOwner) {
-            adapterFeito.submitList(it)
-        }
+        viewModel.notasAfazer.observe(viewLifecycleOwner) { adapterAfazer.submitList(it) }
+        viewModel.notasFazendo.observe(viewLifecycleOwner) { adapterFazendo.submitList(it) }
+        viewModel.notasFeito.observe(viewLifecycleOwner) { adapterFeito.submitList(it) }
     }
 
     private fun configurarBotoes() {
@@ -88,15 +76,20 @@ class TarefasFragment : Fragment() {
         binding.secFazendo.txtTitulo.text = "Fazendo"
         binding.secFeito.txtTitulo.text = "Feito"
 
-        binding.secAfazer.btnAdd.setOnClickListener {
-            abrirAdicionar(Status.AFAZER)
-        }
-        binding.secFazendo.btnAdd.setOnClickListener {
-            abrirAdicionar(Status.FAZENDO)
-        }
-        binding.secFeito.btnAdd.setOnClickListener {
-            abrirAdicionar(Status.FEITO)
-        }
+        // Botões inicialmente invisíveis
+        binding.secAfazer.btnAdd.visibility = View.GONE
+        binding.secFazendo.btnAdd.visibility = View.GONE
+        binding.secFeito.btnAdd.visibility = View.GONE
+
+        // Habilita botões se usuário for dono
+        val visibilidade = if (viewModel.podeEditarOuRemover()) View.VISIBLE else View.GONE
+        binding.secAfazer.btnAdd.visibility = visibilidade
+        binding.secFazendo.btnAdd.visibility = visibilidade
+        binding.secFeito.btnAdd.visibility = visibilidade
+
+        binding.secAfazer.btnAdd.setOnClickListener { abrirAdicionar(Status.AFAZER) }
+        binding.secFazendo.btnAdd.setOnClickListener { abrirAdicionar(Status.FAZENDO) }
+        binding.secFeito.btnAdd.setOnClickListener { abrirAdicionar(Status.FEITO) }
     }
 
     private fun abrirAdicionar(status: Status) {
@@ -120,12 +113,13 @@ class TarefasFragment : Fragment() {
     }
 
     private fun confirmarExcluir(nota: Nota) {
+        // Só dono pode excluir
+        if (!viewModel.podeEditarOuRemover()) return
+
         AlertDialog.Builder(requireContext())
             .setTitle("Excluir tarefa?")
             .setMessage("Deseja excluir '${nota.titulo}'?")
-            .setPositiveButton("Sim") { _, _ ->
-                viewModel.removerNota(nota)
-            }
+            .setPositiveButton("Sim") { _, _ -> viewModel.removerNota(nota) }
             .setNegativeButton("Cancelar", null)
             .show()
     }
