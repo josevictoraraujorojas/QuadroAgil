@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.quadroagil.R
 import com.example.quadroagil.databinding.FragmentEquipeBinding
+import com.example.quadroagil.ui.view.projeto.AdicionarColaboradorFragment
 
 class EquipeFragment : Fragment() {
 
@@ -23,6 +23,19 @@ class EquipeFragment : Fragment() {
         "Joao Pneu",
         "Dany"
     )
+
+    // -------------------------------------------------------------------------
+    // MÉTODO CORRETO para criar o fragment COM ARGUMENTOS
+    // -------------------------------------------------------------------------
+    companion object {
+        fun newInstance(idProjeto: String): EquipeFragment {
+            val fragment = EquipeFragment()
+            fragment.arguments = Bundle().apply {
+                putString("idProjeto", idProjeto)
+            }
+            return fragment
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +50,15 @@ class EquipeFragment : Fragment() {
 
         montarLista()
 
+        // ---------------------------------------------------------------------
+        // PEGANDO O idProjeto COM SEGURANÇA
+        // ---------------------------------------------------------------------
+        val idProjeto = arguments?.getString("idProjeto") ?: ""
+
         binding.btnAddMembro.setOnClickListener {
-            Toast.makeText(requireContext(), "Adicionar novo membro", Toast.LENGTH_SHORT).show()
+
+            val fragment = AdicionarColaboradorFragment.newInstance(idProjeto)
+            abrirFragment(fragment)
         }
     }
 
@@ -77,5 +97,13 @@ class EquipeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+    private fun abrirFragment(fragment: Fragment) {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

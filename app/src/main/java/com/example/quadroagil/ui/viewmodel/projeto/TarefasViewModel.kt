@@ -63,11 +63,6 @@ class TarefasViewModel(
     // Operações sobre notas
     // -----------------------
 
-    fun adicionarNota(nota: Nota) {
-        viewModelScope.launch {
-            repository.cadastrarNota(nota)
-        }
-    }
 
     fun removerNota(nota: Nota) {
         viewModelScope.launch {
@@ -75,15 +70,4 @@ class TarefasViewModel(
         }
     }
 
-    fun editarNota(nota: Nota) {
-        viewModelScope.launch {
-            repository.atualizarNota(nota)
-        }
-    }
-
-    fun alterarStatusNota(idNota: String, novoStatus: Status) {
-        viewModelScope.launch {
-            repository.alterarStatusNota(idNota, novoStatus.name)
-        }
-    }
 }

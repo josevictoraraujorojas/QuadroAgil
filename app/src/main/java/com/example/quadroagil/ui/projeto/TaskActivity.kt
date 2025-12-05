@@ -39,7 +39,9 @@ class TaskActivity : AppCompatActivity() {
                     arguments = Bundle().apply { putString("idProjeto", idProjeto) }
                 }
                 R.id.nav_equipe -> EquipeFragment()
-                R.id.nav_editar -> EditarProjetoFragment()
+                R.id.nav_editar -> EditarProjetoFragment().apply {
+                    arguments = Bundle().apply { putString("idProjeto", idProjeto) }
+                }
                 else -> null
             }
             fragment?.let { replaceFragment(it) }
