@@ -19,8 +19,6 @@ class EditarTarefaViewModel(
 
     val titulo = MutableLiveData<String>()
     val descricao = MutableLiveData<String>()
-
-    // Agora guarda o **ID** do responsável (não o nome)
     val responsavelSelecionado = MutableLiveData<String>()
 
     val dataInicio = MutableLiveData<String>()
@@ -35,45 +33,57 @@ class EditarTarefaViewModel(
     private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
     init {
-        carregarUsuariosDoProjeto()
+        carregarNotaExistente()
     }
 
-    // ----------------------------------------------------------
-    // 1) CARREGA USUÁRIOS → depois carrega a nota
-    // ----------------------------------------------------------
-    private fun carregarUsuariosDoProjeto() {
-        viewModelScope.launch {
-            val usuarios = usuarioRepo.listarUsuariosDoProjetoSimples(idProjeto)
-            val lista = usuarios.map { UsuarioItem(it.id, it.nome) }
 
-            _usuariosProjeto.postValue(lista)
-
-            carregarNotaExistente()
-        }
-    }
-
-    // ----------------------------------------------------------
-    // 2) BUSCA A NOTA EXISTENTE
-    // ----------------------------------------------------------
     private fun carregarNotaExistente() {
         viewModelScope.launch {
             val nota = notaRepo.buscarNotaPorId(idNota)
-            nota?.let {
 
+            nota?.let {
                 titulo.postValue(it.titulo)
                 descricao.postValue(it.descricao)
                 dataInicio.postValue(it.dataInicio?.let { d -> dateFormatter.format(d) })
                 dataFim.postValue(it.dataFim?.let { d -> dateFormatter.format(d) })
 
-                // Armazena o ID do responsável
+                // Guarda o ID do responsável da nota
                 responsavelSelecionado.postValue(it.idUsuario)
+
+                // Depois de saber quem é o responsável, carrega os usuários
+                carregarUsuariosDoProjeto(it.idUsuario)
             }
         }
     }
 
-    // ----------------------------------------------------------
-    // 3) ATUALIZA NOTA
-    // ----------------------------------------------------------
+
+    private fun carregarUsuariosDoProjeto(idResponsavel: String?) {
+        viewModelScope.launch {
+
+            val usuarios = usuarioRepo.listarUsuariosDoProjetoSimples(idProjeto)
+            val lista = usuarios.map { UsuarioItem(it.id, it.nome) }
+
+
+            val opcaoNenhum = UsuarioItem(id = "", nome = "Nenhum")
+
+            val listaFinal: List<UsuarioItem> = when {
+
+                !idResponsavel.isNullOrEmpty() -> {
+                    val responsavel = lista.find { it.id == idResponsavel }
+                    val outros = lista.filter { it.id != idResponsavel }
+                    listOfNotNull(responsavel) + outros + opcaoNenhum
+                }
+
+
+                else -> {
+                    listOf(opcaoNenhum) + lista
+                }
+            }
+
+            _usuariosProjeto.postValue(listaFinal)
+        }
+    }
+
     fun atualizarNota() {
         val usuarioId = responsavelSelecionado.value ?: return
 
@@ -97,6 +107,5 @@ class EditarTarefaViewModel(
         }
     }
 
-    // ----------------------------------------------------------
     data class UsuarioItem(val id: String, val nome: String)
 }

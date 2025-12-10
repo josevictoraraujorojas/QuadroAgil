@@ -7,6 +7,7 @@ data class Nota(
     val id: String = "",
     val idProjeto: String = "",
     val idUsuario: String = "",
+    var nomeUsuario: String = "",
     val titulo: String = "",
     val descricao: String = "",
     val dataInicio: Date? = null,

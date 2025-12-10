@@ -63,7 +63,10 @@ class ParticipacaoRepository(
 
             db.collection("participacoes").document(docId).delete().await()
 
+            NotaRepository().removerResponsavelDasNotasDoProjeto(idUsuario,idProjeto)
+
             Result.success(Unit)
+
 
         } catch (e: Exception) {
             Result.failure(e)

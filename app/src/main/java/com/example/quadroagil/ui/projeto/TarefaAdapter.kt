@@ -1,5 +1,6 @@
 package com.example.quadroagil.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.quadroagil.data.model.Nota
 import com.example.quadroagil.data.model.Status
 import com.example.quadroagil.data.repository.NotaRepository
+import com.example.quadroagil.data.repository.UsuarioRepository
 import com.example.quadroagil.ui.viewmodel.projeto.TarefasViewModel
 import com.example.quadroagil.databinding.ItemTarefaBinding
 import kotlinx.coroutines.CoroutineScope
@@ -38,9 +40,6 @@ class TarefaAdapter(
             binding.txtDataInicio.text = "Início: ${nota.dataInicio?.let { sdf.format(it) } ?: "Sem data"}"
             binding.txtDataFim.text = "Fim: ${nota.dataFim?.let { sdf.format(it) } ?: "Sem data"}"
 
-            // --------------------------
-            // Configurações de botões
-            // --------------------------
             val podeEditar = viewModel.podeEditarOuRemover()
             val podeAlterarStatus = viewModel.podeAlterarStatus(nota)
 

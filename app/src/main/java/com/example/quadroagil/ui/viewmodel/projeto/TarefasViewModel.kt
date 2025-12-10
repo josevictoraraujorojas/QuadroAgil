@@ -1,5 +1,6 @@
 package com.example.quadroagil.ui.viewmodel.projeto
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.quadroagil.data.model.Nota
 import com.example.quadroagil.data.model.Papel
@@ -28,6 +29,8 @@ class TarefasViewModel(
 
     private var usuarioLogadoPapel: Papel? = null
     private var usuarioLogadoId: String? = null
+
+    private var responsavel: String? = null
 
     private val _usuarioCarregado = MutableLiveData(false)
     val usuarioCarregado: LiveData<Boolean> = _usuarioCarregado
@@ -59,14 +62,19 @@ class TarefasViewModel(
                 val listener = repository.observarNotasDoProjeto(idProjeto) { notas -> trySend(notas) }
                 awaitClose { listener.remove() }
             }.collect { notas ->
+                notas.forEach {
+                    nota ->
+                    if (nota.idUsuario==""){
+                        nota.nomeUsuario = "Nenhum"
+                    }else{
+                        nota.nomeUsuario = repoUsuario.buscarPorId(nota.idUsuario)?.nome ?: "Nenhum"
+                    }
+                }
                 _todasNotas.postValue(notas)
             }
         }
     }
 
-    // ---------------------------
-    // Funções de permissão
-    // ---------------------------
     fun podeEditarOuRemover(): Boolean {
         return usuarioLogadoPapel == Papel.DONO
     }
@@ -75,9 +83,6 @@ class TarefasViewModel(
         return usuarioLogadoPapel == Papel.DONO || nota.idUsuario == usuarioLogadoId
     }
 
-    // ---------------------------
-    // Operações sobre notas
-    // ---------------------------
     fun removerNota(nota: Nota) {
         if (!podeEditarOuRemover()) return
         viewModelScope.launch {

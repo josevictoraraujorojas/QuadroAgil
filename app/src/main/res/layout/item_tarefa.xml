@@ -43,6 +43,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <TextView
+                android:id="@+id/txtResponsavel"
+                android:layout_marginTop="4dp"
+                android:text="@{nota.nomeUsuario}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
             <!-- Datas -->
             <LinearLayout
                 android:orientation="horizontal"

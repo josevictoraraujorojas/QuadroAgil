@@ -64,14 +64,12 @@ class EditarTarefaFragment : Fragment() {
 
             binding.spinnerResponsavel.adapter = adapter
 
-            // Seleciona automaticamente o responsável da nota
             val idResp = viewModel.responsavelSelecionado.value
             val index = lista.indexOfFirst { it.id == idResp }
 
             if (index >= 0)
                 binding.spinnerResponsavel.setSelection(index)
 
-            // --- LISTENER CORRETO ---
             binding.spinnerResponsavel.onItemSelectedListener =
                 object : android.widget.AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
@@ -88,9 +86,6 @@ class EditarTarefaFragment : Fragment() {
         }
     }
 
-    // ----------------------------------------------------------
-    // DATE PICKERS
-    // ----------------------------------------------------------
     private fun configurarDatePickers() {
 
         binding.btnDataInicio.setOnClickListener {
@@ -110,9 +105,6 @@ class EditarTarefaFragment : Fragment() {
         dp.show()
     }
 
-    // ----------------------------------------------------------
-    // SALVAR E VOLTAR
-    // ----------------------------------------------------------
     private fun observarAtualizacao() {
 
         binding.btnEditar.setOnClickListener {

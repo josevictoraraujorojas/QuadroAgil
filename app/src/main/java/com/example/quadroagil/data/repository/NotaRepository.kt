@@ -102,13 +102,26 @@ class NotaRepository(
             .toObjects(Nota::class.java)
     }
 
-    // BUSCAR NOTAS DE UM USUÁRIO
-    suspend fun listarNotasPorUsuario(idUsuario: String): List<Nota> {
-        return db.collection("notas")
+    // Remover Responavel das notas do projeto
+    suspend fun removerResponsavelDasNotasDoProjeto( idUsuario: String, idProjeto: String): Int {
+        val notasRef = db.collection("notas")
+
+        // Buscar notas daquele projeto onde o usuário é responsável
+        val snapshot = notasRef
+            .whereEqualTo("idProjeto", idProjeto)
             .whereEqualTo("idUsuario", idUsuario)
             .get()
             .await()
-            .toObjects(Nota::class.java)
+
+        val notas = snapshot.documents
+
+        // Atualizar cada nota removendo o responsável
+        notas.forEach { doc ->
+            doc.reference.update("idUsuario", "").await()
+        }
+
+        // Retorna quantas notas foram modificadas
+        return notas.size
     }
 
     fun observarNotasDoProjeto(idProjeto: String, callback: (List<Nota>) -> Unit): ListenerRegistration {
@@ -122,3 +135,8 @@ class NotaRepository(
             }
     }
 }
+
+
+
+
+
